@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Clara</title>
+	<script type="text/javascript" src="./build/Main.js"></script>
+	<script type="text/javascript" src="js/dtm.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+	<link href="https://fonts.googleapis.com/css?family=Cormorant+Garamond" rel="stylesheet">
+</head>
+<body>
+	<style type="text/css">
+
+		body {
+			width: 100%;
+			height: auto;
+			max-width: 960px;
+			margin: auto;
+			font-family: 'Cormorant Garamond', helvetica;
+		}
+
+		#loading {
+			position:relative;
+			width: 700px;
+			height: 1px;
+			border: 0px solid #ccc;
+			margin:0px auto 10px;
+		}
+
+		#loading #fill {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			height: 100%;
+			width: 0%;
+			background-color: #333;
+		}
+		h1 {
+			font-weight:500;
+			font-size:70px;
+			height:70px;
+			color:#333;
+			text-align:center;
+			cursor:pointer;
+			display:block;
+			box-sizing:border-box;
+			margin-top:30px;
+		}
+		textarea {
+			border:solid 1px #333;
+			background-color:#fff;
+			font-family: 'Cormorant Garamond', helvetica;
+			width:700px;
+			font-size:22px;
+			margin:10px auto;
+			height:300px;
+			display:block;
+			padding:20px;
+			box-sizing:border-box;
+			outline:none;
+		}
+		textarea:focus {
+		/*	border:solid 2px #333; */
+		}
+		button {
+			background-color:#fff;
+			color:#333;
+			font-size:21px;
+			margin:10px auto;
+			display:block;
+			font-weight:300;
+			outline:none;
+			padding:7px 30px;
+			font-family: 'Cormorant Garamond', helvetica;
+		}
+		#viz {
+			width:700px;
+			display:block;
+			margin:0 auto;
+			height:75px;
+			border:solid 1px black;
+		}
+	</style>
+
+	<h1 onclick="eval()">Clara</h1>
+
+	<div id='loading'>
+		<div id='fill'></div>
+	</div>
+
+	<canvas id="viz"></canvas>
+
+	<textarea>
+melody = dtm.gen("line").stretch(2).repeat(5)</textarea>
+
+	<button onclick="evalCode()">clara.play(melody)</button>
+
+
+	<script>
+
+
+	function Melody(arr) {
+		this.notes = arr
+		this.next = function() {
+			if (this.notes.length<=0) {
+				clearInterval(this.interval)
+			} else {
+				var note = this.notes.slice(0,1)
+				this.notes = this.notes.slice(1)
+				note = Math.floor(note*60+20)
+				var velocity = 0.01
+				var duration = 3
+				var time = 0
+				console.log(note)
+				piano.keyDown(note, velocity).keyUp(note, duration)
+			}
+		}
+		this.interval = setInterval(this.next.bind(this),100)
+	}
+
+	function MelodyMaker() {
+
+		this.melodies = []
+		this.play = function(arr) {
+			arr = arr.get()
+			this.melodies.push( new Melody(arr) )
+		}
+
+	}
+
+	var clara = new MelodyMaker()
+	var codeeditor = document.getElementsByTagName("textarea")[0]
+
+	function evalCode() {
+		code = codeeditor.value
+		eval(code)
+		if (melody) {
+			clara.play(melody)
+		}
+	}
+
+	viz = document.getElementById("viz")
+	ctx = viz.getContext("2d")
+	viz.width = 700
+	viz.height = 100;
+	viz.style.width = "700px";
+	viz.style.height = "100px";
+
+	codeeditor.addEventListener("keyup",function() {
+		vizCode()
+	})
+
+	function vizCode() {
+		code = codeeditor.value
+		try {
+			eval(code)
+		} catch(e) {
+			return
+		}
+		if (melody) {
+			with (ctx) {
+				clearRect(0,0,viz.width,viz.height)
+				arr = melody.get()
+				for (var i=0;i<arr.length;i++) {
+					fillStyle = "#000"
+					var w = viz.width / arr.length
+					var x = i * w
+					var y = (1 - arr[i]) * viz.height
+					beginPath()
+					ellipse(x,y,w/2,w/2,0,0,Math.PI*2)
+					fill()
+					closePath()
+				}
+			}
+		}
+	}
+
+	vizCode()
+	</script>
+</body>
+</html>
