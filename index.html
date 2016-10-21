@@ -98,8 +98,7 @@
 
 	<canvas id="viz"></canvas>
 
-	<textarea>
-melody = dtm.gen("line").stretch(2).repeat(5)</textarea>
+	<textarea>melody=dtm.gen("sine").fit(20).repeat(3).r().amp(dtm.randi(200)).round(0.15)</textarea>
 
 	<button onclick="evalCode()">clara.play(melody)</button>
 
