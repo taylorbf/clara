@@ -37,12 +37,14 @@
 		}
 		h1 {
 			font-weight:500;
-			font-size:60px;
+			font-size:70px;
+			height:70px;
 			color:#333;
 			text-align:center;
+			cursor:pointer;
 			display:block;
 			box-sizing:border-box;
-			margin:30px;
+			margin-top:30px;
 		}
 		textarea {
 			border:solid 1px #333;
@@ -51,7 +53,7 @@
 			width:700px;
 			font-size:22px;
 			margin:10px auto;
-			height:200px;
+			height:300px;
 			display:block;
 			padding:20px;
 			box-sizing:border-box;
@@ -78,19 +80,11 @@
 			height:75px;
 			border:solid 1px black;
 		}
-		#keyviz {
-			width:700px;
-			display:block;
-			margin:0 auto 10px;
-			height:75px;
-			border:solid 1px black;
-		}
 	</style>
 
 	<h1 onclick="eval()">Clara</h1>
 
 <!--	<canvas nx="meter" id="db"></canvas> -->
-	<canvas nx="keyboard" id="keyviz"></canvas>
 
 	<div id='loading'>
 		<div id='fill'></div>
@@ -109,7 +103,7 @@ melody = dtm.gen("line").stretch(2).repeat(5)</textarea>
 	var scale = [0,2,4,5,7,9,11]
 	//scale = [0,1,3,7,8]
 	var range = scale.length * 5
-	var base = 36
+	var base = 38
 
 	function indexToNote(index) {
 		var degree = index % scale.length;
@@ -130,24 +124,18 @@ melody = dtm.gen("line").stretch(2).repeat(5)</textarea>
 				if (note > 0) {
 					note = Math.floor(note*range)
 					note = indexToNote(note)
-					this.playNote(note)
+					var velocity = 0.01
+					var duration = 3
+					var time = 0
+					console.log(note)
+					piano.keyDown(note, velocity).keyUp(note, duration)
 				} else {
 					console.log("rest")
 				}
 			}
 		}
 		this.interval = setInterval(this.next.bind(this),100)
-		this.playNote = function(note) {
-			var velocity = 0.01
-			var duration = 3
-			var time = 0
-			piano.keyDown(note, velocity).keyUp(note, duration)
-			activeNotes.push(note)
-			setTimeout("activeNotes.splice(activeNotes.indexOf("+note+"),1)",duration*1000)
-		}
 	}
-
-	var activeNotes = []
 
 	function MelodyMaker() {
 
@@ -194,20 +182,14 @@ melody = dtm.gen("line").stretch(2).repeat(5)</textarea>
 				clearRect(0,0,viz.width,viz.height)
 				arr = melody.get()
 				for (var i=0;i<arr.length;i++) {
-					if (arr[i]>0) {
-						fillStyle = "#000"
-						var w = viz.width / arr.length
-						var x = i * w
-						var y = (1 - arr[i]) * viz.height
-						x *= ( (viz.width-10) / viz.width )
-						x += 5
-						y *= ( (viz.height-10) / viz.height )
-						y += 5
-						beginPath()
-						ellipse(x,y,w/2,w/2,0,0,Math.PI*2)
-						fill()
-						closePath()
-					}
+					fillStyle = "#000"
+					var w = viz.width / arr.length
+					var x = i * w
+					var y = (1 - arr[i]) * viz.height
+					beginPath()
+					ellipse(x,y,w/2,w/2,0,0,Math.PI*2)
+					fill()
+					closePath()
 				}
 			}
 		}
@@ -215,24 +197,9 @@ melody = dtm.gen("line").stretch(2).repeat(5)</textarea>
 
 	vizCode()
 
-	nx.onload = function() {
-		nx.colorize("fill","#fff")
-		keyviz.octaves = 5
-		keyviz.colors.keydown = "#70b"
-		keyviz.init()
-		//db.setup(Tone.Context,Tone.Master)
-		setInterval(updateKeyboard,100)
-	}
-
-	function updateKeyboard() {
-		for (var i=0;i<keyviz.keys.length;i++) {
-			keyviz.toggle( keyviz.keys[i], false )
-		}
-		for (var i=0;i<activeNotes.length;i++) {
-			var note = activeNotes[i] - base
-			keyviz.toggle( keyviz.keys[ note ], true )
-		}
-	}
+/*	nx.onload = function() {
+		db.setup(Tone.Context,Tone.Master)
+	} */
 	</script>
 </body>
 </html>
