@@ -81,24 +81,13 @@
 		#keyviz {
 			width:700px;
 			display:block;
-			margin:10px auto 10px;
+			margin:0 auto 10px;
 			height:75px;
-			border:solid 0px black;
-		}
-		#cycles {
-			width:700px;
-			height:120px;
 			border:solid 1px black;
-			margin:10px;
-			padding:10px;
-			margin:0 auto;
-			box-sizing:border-box;
 		}
 	</style>
 
 	<h1 onclick="eval()">Clara</h1>
-
-	<div id="cycles"></div>
 
 <!--	<canvas nx="meter" id="db"></canvas> -->
 	<canvas nx="keyboard" id="keyviz"></canvas>
@@ -133,35 +122,6 @@
 		return midinote
 	}
 
-	/** @method toPolar
-	    Receives cartesian coordinates and returns polar coordinates as an object with 'radius' and 'angle' properties.
-	    @param {float} [x]
-	    @param {float} [y]
-	    ```js
-	    var ImOnACircle = nx.toPolar({ x: 20, y: 50 }})
-	    ```
-	*/
-	var toPolar = function(x,y) {
-	  var r = Math.sqrt(x*x + y*y);
-	  var theta = Math.atan2(y,x);
-	  if (theta < 0.) {
-	    theta = theta + (2 * Math.PI);
-	  }
-	  return {radius: r, angle: theta};
-	}
-
-	/** @method toCartesian
-	    Receives polar coordinates and returns cartesian coordinates as an object with 'x' and 'y' properties.
-	    @param {float} [radius]
-	    @param {float} [angle]
-	*/
-	var toCartesian = function(radius, angle){
-	  var cos = Math.cos(angle);
-	  var sin = Math.sin(angle);
-	  return {x: radius*cos, y: radius*sin*-1};
-	}
-
-
 	/* TRANSFORMS DATA INTO A SERIES OF MUSICAL EVENTS */
 
 	function MelodyMaker() {
@@ -174,34 +134,33 @@
 
 	function Melody(arr) {
 		this.notes = arr
-		this.code = codeeditor.value
-		this.cycle = new Cycle(arr)
 		this.next = function() {
 			if (this.notes.length<=0) {
-					eval(this.code)
-					this.notes = melody.get()
-					this.cycle.update(this.notes)
-			//	clearInterval(this.interval)
-			//	this.cycle.kill()
-			//	clara.melodies.splice( clara.melodies.indexOf(this),1 )
+				clearInterval(this.interval)
 			} else {
 				var note = this.notes.slice(0,1)
 				this.notes = this.notes.slice(1)
+				//note = Math.floor(note*60+20)
 				if (Array.isArray(note)) {
 					var group = note[0].get()
+				//	console.log(1)
 				} else {
+			//		console.log(2)
 					var group = [ note ]
 				}
+			//	console.log(group)
 				for (var i=0;i<group.length;i++) {
 					note = group[i]
+				//	console.log(note)
 					if (note > 0) {
 						note = Math.floor(note*range)
 						note = indexToNote(note)
 						this.playNote(note)
+					} else {
+						//console.log("rest")
 					}
 				}
 			}
-			this.cycle.drawprogress( this.notes.length )
 		}
 		this.interval = setInterval(this.next.bind(this),100)
 		this.playNote = function(note) {
@@ -223,7 +182,6 @@
 			clara.play(melody)
 		}
 	}
-
 
 
 	/* KEYBOARD VIS */
@@ -251,11 +209,13 @@
 				clearRect(0,0,viz.width,viz.height)
 				arr = melody.get()
 				for (var i=0;i<arr.length;i++) {
+					window.testtt = arr
 					if (typeof arr[i] === "function" ) {
 						var group = arr[i].get()
 					} else {
 						var group = [ arr[i] ]
 					}
+					console.log(group)
 					for (var j=0;j<group.length;j++) {
 						note = group[j]
 						if (note>0) {
@@ -303,78 +263,8 @@
 
 	/* CYCLE VIZ */
 
-	var Cycle = function(arr) {
-		this.data = arr
-		this.parent = document.getElementById("cycles")
-		this.canvas = document.createElement("canvas")
-		this.ctx = this.canvas.getContext("2d")
-		this.diameter = 75
-		this.canvas.height = this.diameter
-		this.canvas.width = this.diameter
-		this.canvas.style.width = this.diameter + "px"
-		this.canvas.style.height = this.diameter + "px"
-		this.parent.appendChild(this.canvas)
-		this.drawmelody = function() {
-			with(this.ctx) {
-				fillStyle = "#fff"
-				fillRect(0,0,this.canvas.width,this.canvas.height)
-				beginPath()
-				fillStyle="black"
-				for (var i=0;i<this.data.length;i++) {
-					var r = (this.diameter/2 - 15) * this.data[i] + 6
-					var angle = (Math.PI * 2) - ( i / this.data.length ) * Math.PI * 2
-					var loc = toCartesian(r,angle)
-					loc.x += (this.canvas.width/2)
-					loc.y += (this.canvas.height/2)
-					beginPath()
-						ellipse(loc.x,loc.y,1,1,0,Math.PI*2,false)
-						fill()
-					closePath()
-				}
-				strokeStyle = "#000"
-				fillStyle = "#fff"
-				lineWidth = 2
-				beginPath()
-					ellipse(this.canvas.width/2,this.canvas.height/2,6,6,0,Math.PI*2,false)
-					stroke()
-					fill()
-				closePath()
-			}
-		}
-		this.drawmelody()
-		this.drawprogress = function(n) {
-			// n is how many notes are left
-			with (this.ctx) {
-				strokeStyle = "#000"
-				lineWidth = 2
-				var progress = (this.data.length - n) / this.data.length
-				if (progress > 0) {
-					beginPath()
-						arc(this.canvas.width/2,this.canvas.height/2,this.diameter/2-2,0,progress*Math.PI*2,false)
-						stroke()
-					closePath()
-				}
-			}
-		}
-		this.kill = function() {
-			this.parent.removeChild(this.canvas)
-		}
-		this.update = function(arr) {
-			this.data = arr
-			this.drawmelody()
-		}
-	}
 
-	cycles = []
-	//var testmelody = dtm.line(20).repeat(4)
-	//cycles.push[ new Cycle(testmelody.get()) ]
-
-
-
-
-
-
-
+	
 	</script>
 </body>
 </html>

@@ -3786,32 +3786,15 @@ keyboard.prototype.draw = function() {
 		lineWidth = 2;
 
 		for (var i in this.wkeys) {
-    /*  if (this.wkeys[i].on) {
-        fillStyle = this.colors.borderhl
-      } else {
-        globalAlpha = 0.5
-        fillStyle = this.colors.fill
-      } */
 			fillStyle = this.wkeys[i].on ? this.colors.keydownw : this.colors.fill
 			strokeRect(this.wkeys[i].x,0,this.white.width,this.white.height);
 			fillRect(this.wkeys[i].x,0,this.white.width,this.white.height);
-    //  globalAlpha = 1
 		}
 		for (var i in this.bkeys) {
-    /*  if (this.bkeys[i].on) {
-        fillStyle = this.colors.borderhl
-      } else {
-        globalAlpha = 0.5
-        fillStyle = this.colors.black
-      } */
 			fillStyle = this.bkeys[i].on ? this.colors.keydownb : this.colors.black
-			strokeStyle = this.colors.black
-      lineWidth = 2
-			strokeRect(this.bkeys[i].x,0,this.black.width,this.black.height);
 			fillRect(this.bkeys[i].x,0,this.black.width,this.black.height);
-    //  globalAlpha = 1
 		}
-		//strokeRect(0,0,this.GUI.w,this.GUI.h);
+		strokeRect(0,0,this.GUI.w,this.GUI.h);
 	}
 	this.drawLabel();
 }
