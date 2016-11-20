@@ -1509,7 +1509,7 @@ function random(arg1, arg2) {
 function levenshteinDistance(a, b) {
     if (a.length === 0) return b.length;
     if (b.length === 0) return a.length;
-    
+
     var cost = a[0] !== b[0] ? 1 : 0;
 
     return Math.min(
@@ -4011,7 +4011,7 @@ dtm.transform = {
 
         return res;
     },
-    
+
     editDistance: function (array, target) {
         return array.map(function (v) {
             return levenshteinDistance(v, target);
@@ -4118,9 +4118,9 @@ dtm.transform = {
         }
         return res;
     },
-    
+
     convolve: function () {
-        
+
     }
 };
 
@@ -5055,7 +5055,7 @@ dtm.array = function () {
 
         return array;
     };
-    
+
     array.undo = function (steps) {
         if (!isNumber(steps) || steps < 1) {
             steps = 1;
@@ -5260,6 +5260,85 @@ dtm.array = function () {
     };
 
     array.r = array.range;
+
+    /*
+   array.notes = function (notes) {
+
+
+
+       if (isNestedDtmArray(array)) {
+           if (isNumber(arg3) && isNumber(arg4)) {
+               dmin = arg3;
+               dmax = arg4;
+           } else {
+               dmin = Infinity;
+               dmax = -Infinity;
+
+               array.forEach(function (a) {
+                   dmin = a.get('min') < dmin ? a.get('min') : dmin;
+                   dmax = a.get('max') > dmax ? a.get('max') : dmax;
+               });
+           }
+
+           return array.map(function (a) {
+               return a.range(arg1, arg2, dmin, dmax);
+           });
+       }
+
+       // TODO: better typecheck order
+
+       if (arguments.length === 0) {
+           min = 0;
+           max = 1;
+       } else if (isNumber(arg1)) {
+           if (arguments.length === 1) {
+               min = 0;
+               max = arg1;
+           } else {
+               min = arg1;
+           }
+       } else if (isNumArray(arg1)) {
+           if (arg1.length >= 2) {
+               min = arg1[0];
+               max = arg1[1];
+           }
+           if (arg1.length > 2) {
+               min = getMin(arg1);
+               max = getMax(arg1);
+           }
+       } else if (isDtmArray(arg1) && isNumOrFloat32Array(arg1.get())) {
+           if (arg1.get('len') === 2) {
+               min = arg1.get(0);
+               max = arg1.get(1);
+           } else if (arg1.get('len') > 2) {
+               min = arg1.get('min');
+               max = arg1.get('max');
+           }
+       } else {
+           return array;
+       }
+
+       if (isNumber(arg2)) {
+           max = arg2;
+       } else if (isNumArray(arg2) && arg2.length === 2) {
+           dmin = arg2[0];
+           dmax = arg2[1];
+       }
+
+       if (isNumber(arg3)) {
+           dmin = arg3;
+       } else if (isNumArray(arg3) && arg3.length === 2) {
+           dmin = arg3[0];
+           dmax = arg3[1];
+       }
+
+       if (isNumber(arg4)) {
+           dmax = arg4;
+       }
+
+       return array.set(dtm.transform.rescale(array.val, min, max, dmin, dmax));
+   };
+   */
 
     array.unipolar = function () {
         return array.range(0, 1);
@@ -10493,7 +10572,7 @@ dtm.synth = function () {
         }
         return synth;
     };
-    
+
     function getPhase() {
         params.phase = (actx.currentTime - params.startTime) / params.dur.base(synth.seq()).get(0);
         if (params.phase < 0.0) {
@@ -11178,7 +11257,7 @@ dtm.synth = function () {
         newParams.voiceId = Math.random();
         return dtm.synth().meta.setParams(newParams);
     };
-    
+
     ['play', 'stop', 'run', 'interval', 'duration', 'repeat', 'amplitude', 'frequency', 'notenum', 'pitch'].forEach(function (name) {
         if (name in alias) {
             alias[name].forEach(function (v) {
