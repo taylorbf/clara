@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>3D viz test</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			a {
+				color:#0078ff;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src="js/three.js"></script>
+		<script src="js/renderers/Projector.js"></script>
+		<script src="js/renderers/CanvasRenderer.js"></script>
+
+		<script>
+
+			var camera
+			var scene
+			var renderer
+
+		 renderer = new THREE.WebGLRenderer({antialias:true});
+		 renderer.setSize(window.innerWidth, window.innerHeight);
+		 document.body.appendChild(renderer.domElement);
+		 camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+		 camera.position.set(0, 0, 100);
+		 camera.lookAt(new THREE.Vector3(0, 0, 0));
+		 scene = new THREE.Scene();
+
+		 var material = new THREE.LineBasicMaterial({
+				 color: 0xeeeeee,
+				 linewidth: 10,
+				 fog:true
+		 });
+
+		 var geometry = new THREE.Geometry();
+		 geometry.vertices.push(new THREE.Vector3(-10, 0, 0));
+		 geometry.vertices.push(new THREE.Vector3(10, -10, 0));
+
+		 var line = new THREE.Line(geometry, material);
+
+		 scene.add(line);
+		 renderer.render(scene, camera);
+
+
+		 animate();
+
+		function animate() {
+		  // Defined in the RequestAnimationFrame.js file, this function means that the
+		  // animate function is called upon timeout:
+		  requestAnimationFrame( animate );
+
+		  render();
+		}
+
+		var timer = 0
+
+		function render() {
+
+		  // *** Update the scene ***
+
+		  // Set the camera to always point to the centre of our scene, i.e. at vector 0, 0, 0
+		  camera.lookAt( scene.position );
+
+		  // Move the camera in a circle with the pivot point in the centre of this circle...
+		  // ...so that the pivot point, and focus of the camera is on the centre of our scene.
+		  timer += 0.01
+
+		  camera.position.x = Math.floor(Math.cos( timer ) * 200);
+		  camera.position.z = Math.floor(Math.sin( timer ) * 200);
+
+		  renderer.render(scene, camera);
+		}
+
+		</script>
+	</body>
+</html>

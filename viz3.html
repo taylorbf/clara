@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>3D viz test</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			a {
+				color:#0078ff;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src="js/three.js"></script>
+		<script src="js/renderers/Projector.js"></script>
+		<script src="js/renderers/CanvasRenderer.js"></script>
+
+		<script>
+
+			var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+			camera.position.set(0, 0, 100);
+ 		 	camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			var scene = new THREE.Scene();
+
+			var renderer = new THREE.CanvasRenderer({antialias:true});
+		 	renderer.setSize(window.innerWidth, window.innerHeight);
+		 	document.body.appendChild(renderer.domElement);
+
+			scene.add( new THREE.AmbientLight( 0x00020 ) );
+
+			var material = new THREE.LineBasicMaterial({
+				color: 0x992255,
+				linewidth: 10,
+				linecap: "round"
+			});
+
+		 	var geometry = new THREE.Geometry();
+		 	geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+		 	geometry.vertices.push(new THREE.Vector3(10, 0, 0));
+
+		  var line = new THREE.Line(geometry, material);
+
+		 	var distant = new THREE.Geometry();
+		 	distant.vertices.push(new THREE.Vector3(0, 5, -20));
+		 	distant.vertices.push(new THREE.Vector3(10, 0, -20));
+
+		 	var distantline = new THREE.Line(distant, material);
+
+			// light
+			scene.add(line);
+			scene.add(distantline);
+
+			light1 = new THREE.PointLight( 0xff0040, 1, 50 );
+			scene.add( light1 );
+			var PI2 = Math.PI * 2;
+			var program = function ( context ) {
+				context.beginPath();
+				context.arc( 0, 0, 0.5, 0, PI2, true );
+				context.fill();
+			};
+			var sprite = new THREE.Sprite( new THREE.SpriteCanvasMaterial( { color: 0xff0040, program: program } ) );
+			light1.add( sprite );
+
+
+
+
+		 	renderer.render(scene, camera);
+
+
+		 animate();
+
+		function animate() {
+		  // Defined in the RequestAnimationFrame.js file, this function means that the
+		  // animate function is called upon timeout:
+		  requestAnimationFrame( animate );
+
+		  render();
+		}
+
+
+		function render() {
+
+		  // *** Update the scene ***
+
+		  // Set the camera to always point to the centre of our scene, i.e. at vector 0, 0, 0
+		  camera.lookAt( scene.position );
+
+			var time = Date.now() * 0.0005;
+			//if ( mesh ) mesh.rotation.y -= 0.01;
+			light1.position.x = Math.sin( time * 0.7 ) * 30;
+			light1.position.y = Math.cos( time * 0.5 ) * 40;
+			light1.position.z = Math.cos( time * 0.3 ) * 30;
+
+		  // Move the camera in a circle with the pivot point in the centre of this circle...
+		  // ...so that the pivot point, and focus of the camera is on the centre of our scene.
+		//  timer += 0.1
+
+		//  camera.position.x = Math.floor(Math.cos( timer ) * 200);
+		//  camera.position.z = Math.floor(Math.sin( timer ) * 200);
+
+		   renderer.render(scene, camera);
+		}
+
+		</script>
+	</body>
+</html>

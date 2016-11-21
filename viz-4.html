@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>3D viz test</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			a {
+				color:#0078ff;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src="js/three.js"></script>
+
+		<script src="js/renderers/Projector.js"></script>
+		<script src="js/renderers/CanvasRenderer.js"></script>
+
+		<script>
+
+			var data = []
+			for (var i=0;i<1000;i++) {
+				data.push({
+					pitch: Math.cos(i/10)*30,
+					duration: Math.floor(Math.random()*8),
+					volume: Math.floor(Math.random()*10)/10,
+					ms: Math.floor(Math.random()*200)+50
+				})
+			}
+
+			var mouseX = 0, mouseY = 0,
+
+			windowHalfX = window.innerWidth / 2,
+			windowHalfY = window.innerHeight / 2,
+
+			camera, scene, renderer;
+
+			init();
+			animate();
+
+			function init() {
+
+				var container, separation = 100, amountX = 50, amountY = 50,
+				particles, particle;
+
+				container = document.createElement('div');
+				document.body.appendChild(container);
+
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.z = 100;
+
+				scene = new THREE.Scene();
+
+				renderer = new THREE.CanvasRenderer({antialias:true});
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				// particles
+
+				var PI2 = Math.PI * 2;
+				var material = new THREE.SpriteCanvasMaterial( {
+
+					color: 0xffffff,
+					program: function ( context ) {
+
+						context.beginPath();
+						context.arc( 0, 0, 0.2, 0, PI2, true );
+						context.fill();
+
+					}
+
+				} );
+
+
+				xloc = 0
+				for ( var i = 0; i < data.length; i ++ ) {
+
+					var geometry = new THREE.Geometry();
+
+					xloc += data[i].ms / 100
+					particle = new THREE.Sprite( material );
+					particle.position.x = xloc
+					particle.position.y = data[i].pitch;
+					particle.position.z = 0;
+					geometry.vertices.push( particle.position );
+
+					particle2 = new THREE.Sprite( material );
+					particle2.position.x = xloc + data[i].duration
+					particle2.position.y = data[i].pitch;
+					particle2.position.z = 0;
+				//	scene.add( particle );
+				//	scene.add( particle2 );
+					geometry.vertices.push( particle2.position );
+
+					var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: data[i].volume, linewidth: 2, linecap: "round"  } ) );
+					line.opacity =
+					scene.add( line );
+
+				}
+
+				// lines
+
+
+
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			//
+
+			function onDocumentMouseMove(event) {
+
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+
+			}
+
+			function onDocumentTouchStart( event ) {
+
+				if ( event.touches.length > 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+
+			}
+
+			function onDocumentTouchMove( event ) {
+
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+
+			}
+
+			var timer = 0
+			function render() {
+
+				timer += 0.1
+				camera.position.x = timer;
+				camera.position.z = mouseX/10 + 50;
+			//	camera.position.y += ( - mouseY + 200 - camera.position.y ) * .05;
+			//	camera.lookAt( scene.position );
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+	</body>
+</html>
