@@ -31,7 +31,7 @@
 		<canvas id="viz" style="display:none"></canvas>
 
 		<textarea class="codeeditor" id="codeeditor">
-pitch: gen("sine").fit(8).r(30,40)
+pitch: gen("sine").fit(8).r(0,60)
 vol: 0.5
 dur: 4
 ms: 100
@@ -98,7 +98,7 @@ loop: true</textarea>
 				} );
 
 
-				xloc = 0
+			/*	xloc = 0
 				for ( var i = 0; i < data.length; i ++ ) {
 
 					var geometry = new THREE.Geometry();
@@ -121,10 +121,9 @@ loop: true</textarea>
 					var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: data[i].volume, linewidth: 2, linecap: "round"  } ) );
 					line.opacity =
 					scene.add( line );
-					scene.remove( line );
 
 				}
-
+ */
 				// lines
 
 
@@ -199,10 +198,17 @@ loop: true</textarea>
 			var timer = 0
 			function render() {
 
-				timer += 0.1
-				camera.position.x = timer;
+				timer += 0.05
+				camera.position.x = timer
+				camera.position.y = -35
+				camera.position.z = 100
+			//	camera.position.x = timer;
 			//	camera.position.z = mouseX/10 + 50;
-			//	camera.position.y += ( - mouseY + 200 - camera.position.y ) * .05;
+			//	camera.position.x = Math.sin( timer ) * 50
+			//	camera.position.z = Math.cos( timer ) * 50
+
+			//	camera.position.x = mouseX / 100
+			//	camera.position.z = 50 + Math.sin(mouseX/100)*20
 			//	camera.lookAt( scene.position );
 
 				renderer.render( scene, camera );
