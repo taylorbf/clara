@@ -1,3 +1,37 @@
+// composition now loaded as composition
+
+
+function playComposition() {
+	structure = composition.structure.slice(0)
+	queueSection()
+	Loop.start()
+}
+
+function queueSection() {
+	melodies = []
+//	for (var i=0;i<structure.length;i++) {
+	var section = structure.splice(0,1)
+	var parts = composition.sections[ section ].parts
+	for (var j=0;j<parts.length;j++) {
+		var stack = []
+		for (var k=0;k<parts[j].length;k++) {
+			var pattern = parts[j][k]
+			if (pattern.loop) {
+				for (var l=0;l<pattern.loop;l++) {
+					stack.push(pattern.pitch)
+				}
+			} else {
+				stack.push(pattern.pitch)
+			}
+		}
+	//	console.log(stack)
+		var mel = new Melody(stack)
+		melodies.push(mel)
+	}
+//	}
+}
+
+
 
 /* DEFINE MUSICAL INFO */
 var scale = [0,1,2,3,4,5,6,7,8,9,10,11]
@@ -22,21 +56,28 @@ var melody = function() {
 	}
 }
 
-var DTMeval = eval.bind(false,dtm)
-function DTMeval(code) {
-	console.log(code)
-	return eval(code)
-}
 
-function Melody(code) {
-	this.code = code
-	this.arr = eval("with (dtm) {"+code+"}")
-	this.temp = this.arr
-	this.notes = this.arr.get()
+function Melody(stack) {
+	this.stack = stack
+	this.init = function() {
+		this.queueStack()
+	}
+	this.queueStack = function() {
+		if (this.stack.length) {
+			this.code = this.stack.splice(0,1)
+			this.arr = eval("with (dtm) {"+this.code+"}")
+			this.temp = this.arr
+			this.notes = this.arr.get()
+		} else {
+			melodies.splice(melodies.indexOf(this),1)
+			this.oncomplete()
+		}
+	}
 	this.next = function() {
 		if (this.notes.length<=0) {
-			this.arr = eval("with (dtm) {"+code+"}")
-			this.notes = this.arr.get()
+		//	this.arr = eval("with (dtm) {"+code+"}")
+		//	this.notes = this.arr.get()
+			this.queueStack()
 		}
 		var note = this.notes.slice(0,1)
 		this.notes = this.notes.slice(1)
@@ -55,28 +96,7 @@ function Melody(code) {
 		}
 	}
 	this.playNote = function(note) {
-	//	console.log("playing",note)
-
-	/*	var geometry = new THREE.Geometry();
-
-		xloc += 1
-		particle = new THREE.Sprite( material );
-		particle.position.x = camera.position.x + 100
-		particle.position.y = note/2;
-		particle.position.z = 0;
-		geometry.vertices.push( particle.position );
-
-		particle2 = new THREE.Sprite( material );
-		particle2.position.x = camera.position.x + 100 + 1
-		particle2.position.y = note/2;
-		particle2.position.z = 0;
-	//	scene.add( particle );
-	//	scene.add( particle2 );
-		geometry.vertices.push( particle2.position );
-
-		var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 2, linecap: "round"  } ) );
-		scene.add( line );
-*/
+		console.log("playing",note)
 
 		var velocity = 0.01
 		var duration = 3
@@ -91,14 +111,18 @@ function Melody(code) {
 	this.ms = function(newms) {
 		this.interval.ms(newms)
 	}
+	this.oncomplete = function() {
+		queueSection()
+	}
+	this.init()
 }
 
 
-var melodies = []
+var melodies = [] /*
 melodies[0] = {
 	code: {},
 	engine: false
-}
+} */
 function codeToData() {
 	data = {}
 	var code = codeeditor.value
@@ -258,9 +282,9 @@ Tone.Transport.start()
 
 var Loop = new Tone.Loop(function(time){
 	for (var i=0;i<melodies.length;i++) {
-		melodies[i].engine.next()
+		melodies[i].next()
 	}
-}, .1).start(0)
+}, .11)
 
 
 

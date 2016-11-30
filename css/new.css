@@ -14,7 +14,7 @@ body {
 
 #loading {
   position:absolute;
-  top:0px
+  top:10px;
   width: 700px;
   height: 1px;
   border: 0px solid #ccc;

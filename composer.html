@@ -30,12 +30,44 @@
 		</div>
 		<canvas id="viz" style="display:none"></canvas>
 
+
+		<button onclick="playComposition()">PLAY</button>
+
 		<textarea class="codeeditor" id="codeeditor">
-pitch: gen("sine").fit(8).r(0,60)
-vol: 0.5
-dur: 4
-ms: 100
-loop: true</textarea>
+var composition = {
+
+  structure: [ "A" ],
+
+  sections: {
+
+    "A": {
+      duration: 300,
+      vol: 1,
+      ms: 100,
+      parts: [
+        [
+          {
+            pitch: 'gen("sine").fit(ri(1,5,9).get(0)).r(40,10)',
+            vel: 1,
+            loop: 50
+          }
+        ],
+        [
+          {
+            pitch: 'data([0]).rep(30).append([8])',
+            loop: 20
+          }
+        ]
+      ]
+    }
+			  }
+			}
+
+
+
+
+
+</textarea>
 
 
 
@@ -64,6 +96,7 @@ loop: true</textarea>
 			animate();
 
 			function init() {
+
 
 				var container, separation = 100, amountX = 50, amountY = 50,
 				particles, particle;
@@ -224,5 +257,7 @@ loop: true</textarea>
 	<script type="text/javascript" src="./build/Main.js"></script>
 	<script type="text/javascript" src="js/Tone.js"></script>
 	<script type="text/javascript" src="js/dtm.js"></script>
-	<script type="text/javascript" src="js/clara-new2.js"></script>
+
+	<script type="text/javascript" src="compositions/1.js"></script>
+	<script type="text/javascript" src="js/clara-composer.js"></script>
 </html>
