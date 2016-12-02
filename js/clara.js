@@ -12,183 +12,180 @@ var a,b,c,d,e,f,g
 /* Get DOM elements */
 var codeeditor = document.getElementById("codeeditor")
 
-/* TRANSFORMS DATA INTO A SERIES OF MUSICAL EVENTS */
-var melody = function() {
-	var arr = []
-	if ( typeof arguments[0] == "string" ) {
-		return new Melody( dtm.gen(arguments[0]) )
-	} else {
-		return new Melody( dtm.data(Array.from(arguments)) )
+
+function Pattern(code) {
+	this.next = function() {
+		if (this.arr.length<=0) {
+			this.update(this.code)
+		}
+		var nextItem = this.arr.slice(0,1)[0]
+		this.arr = this.arr.slice(1)
+		return nextItem
 	}
+	this.update = function(code) {
+		this.code = code
+		this.arr = eval("with (dtm) {"+code+"}")
+		if (typeof this.arr == "number") {
+			this.arr = dtm.data(this.arr)
+		}
+		this.arr = this.arr.get()
+	}
+	this.update(code)
 }
 
-function Melody(arr) {
-	this.arr = dtm.data([0])
-	this.temp = arr
-	this.notes = this.arr.get()
-	//this.cycle = new Cycle(this.arr)
-	//this.cycle.canvas.addEventListener("click",function() {
-	//	this.kill()
-	//}.bind(this))
+function Melody(patterns) {
 	this.next = function() {
-		if (this.notes.length<=0) {
-				//this.arr = eval("with (dtm) { "+this.code+" }")
-				this.notes = this.arr.get()
-			//	this.cycle.update(this.notes)
-		} //else {
-			var note = this.notes.slice(0,1)
-			this.notes = this.notes.slice(1)
-			if (Array.isArray(note)) {
-				var group = note[0].get()
-			} else {
-				var group = [ note ]
+		var note = this.pitches.next()
+		var velocity = this.vel.next()
+		var duration = this.dur.next()
+		if (Array.isArray(note)) {
+			var group = note[0].get()
+		} else {
+			var group = [ note ]
+		}
+		for (var i=0;i<group.length;i++) {
+			note = group[i]
+			if (note > 0) {
+				note = Math.floor(note)
+				note = indexToNote(note)
+				this.playNote(note,velocity,duration)
 			}
-			for (var i=0;i<group.length;i++) {
-				note = group[i]
-				if (note > 0) {
-					note = Math.floor(note)
-					note = indexToNote(note)
-					this.playNote(note)
-				}
-			}
-		//}
-	//	this.cycle.drawprogress( this.notes.length )
+		}
 	}
-	this.playNote = function(note) {
-		var velocity = 0.01
-		var duration = 3
+	this.playNote = function(note,vel,dur) {
+		var velocity = vel
+		var duration = dur
 		var time = 0
 		piano.keyDown(note, velocity).keyUp(note, duration)
 		activeNotes.push(note)
 		setTimeout("activeNotes.splice(activeNotes.indexOf("+note+"),1)",duration*1000)
 	}
-	this.tempactions = []
 	this.kill = function() {
-		this.tempactions.push( this._kill )
-	}
-	this._kill = function() {
-		this.interval.stop()
-		//this.cycle.kill()
+		this.cycle.kill()
 	}
 	this.ms = function(newms) {
 		this.interval.ms(newms)
 	}
-	this.update = function() {
-		this.arr.set( this.temp.get() )
-		for (var i=0;i<this.tempactions.length;i++) {
-			this.tempactions[i]()
+	this.update = function(patterns) {
+		if (patterns) {
+			this.pitches = new Pattern(patterns.pitch || 0)
+			this.vel = new Pattern(patterns.vel || 0.01)
+			this.dur = new Pattern(patterns.dur || 3)
+		} else {
+			this.pitches = this.vel = this.dur = false
 		}
-		this.tempactions = []
 	}
-	this.interval = interval(200,this.next.bind(this))
+	this.update(patterns)
+}
+
+
+var melodies = []
+for (var i=0;i<4;i++) {
+	melodies[i] = {
+		code: {},
+		engine: new Melody()
+	}
+}
+function codeToData(code) {
+	if (code){
+		data = {}
+	  code = code.split("\n")
+		for (var i=0;i<code.length;i++) {
+			key = code[i].substring(0,code[i].indexOf(": "))
+			value = code[i].substring(code[i].indexOf(": ")+2)
+			data[key] = value
+		}
+		return data
+	}
 }
 
 function evalCode() {
-	var code = codeeditor.value
-	try {
-		context = eval(code)
-		with (context) {
-	  	update()
-		}
-	} catch(e) {
-		console.log(e)
+	var parts = codeeditor.value.split('\n\n')
+	var metadata = parts.splice(0,1)
+	var linenumber = codeeditor.value.substr(0, codeeditor.selectionStart).split("\n").length;
+
+	for (var i=0;i<parts.length;i++) {
+		melodies[i].code = codeToData(parts[i])
+		melodies[i].engine.update(melodies[i].code)
+		//melodies[i].engine = new Melody(melodies[i].code.pitch)
+	}
+	if (Loop.state=="stopped") {
+		Loop.start()
 	}
 }
-
-
-
-this.tempactions = []
-this.kill = function() {
-	this.tempactions.push( this._kill )
-}
-this._kill = function() {
-	this.parent.removeChild(this.canvas)
-}
-this.update = function(arr) {
-	this.data = arr
-	this.drawmelody()
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* KEYBOARD VIS */
 
-viz = document.getElementById("viz")
-ctx = viz.getContext("2d")
-viz.width = 700
-viz.height = 100;
-viz.style.width = "700px";
-viz.style.height = "100px";
-
 codeeditor.addEventListener("keyup",function(e) {
 	if (e.which!=13) {
-		vizCode()
+	//	vizCode()
+	} else {
+		return false
 	}
 })
 codeeditor.addEventListener("keydown",function(e) {
 	if (e.which==13) {
 		evalCode()
-		codeeditor.value = ""
+		e.preventDefault()
+		colorItBlue()
 		return false;
 	}
 })
 
+function colorItBlue() {
+	codeeditor.style.backgroundColor = "#1ce"
+	codeeditor.style.color = "#333"
+	setTimeout(function() {
+		codeeditor.style.backgroundColor = "transparent"
+		codeeditor.style.color = "#1ce"
+	}, 40)
+}
+
+
+var VizNotes = []
+
 function vizCode() {
-	code = codeeditor.value
+	var parts = codeeditor.value.split('\n\n')
+	var metadata = parts.splice(0,1)
+
+	vizmelodies = []
+	for (var i=0;i<parts.length;i++) {
+		vizmelodies[i] = codeToData(parts[i])
+	}
+
+	data = codeToData()
 	var tempmelody = false
 	try {
-			tempmelody = false
-		tempmelody = eval(code)
-		tempmelody = tempmelody.temp
+		tempmelody = eval("with (dtm) {"+data.pitch+"}")
 	} catch(e) {
 		return
 	}
 	if (tempmelody) {
-		with (ctx) {
-			clearRect(0,0,viz.width,viz.height)
-			arr = tempmelody.get()
-			for (var i=0;i<arr.length;i++) {
-				if (typeof arr[i] === "function" ) {
-					var group = arr[i].get()
-				} else {
-					var group = [ arr[i] ]
-				}
-				for (var j=0;j<group.length;j++) {
-					note = group[j]
-					if (note>0) {
-						fillStyle = "#1ce"
-						var w = (viz.width / arr.length) / group.length
-						w = w > 40 ? 40 : w;
-						var x = i * (viz.width / arr.length)
-						var y = ((range - note)/range) * viz.height
-						x *= ( (viz.width-10) / viz.width )
-						x += 20
-						y *= ( (viz.height-10) / viz.height )
-						y += 20
-						beginPath()
-						ellipse(x,y,w/2,w/2,0,0,Math.PI*2)
-						fill()
-						closePath()
-					}
+		for (var i=0;i<VizNotes.length;i++) {
+			scene.remove(VizNotes[i])
+		}
+		VizNotes = []
+		arr = tempmelody.get()
+		for (var i=0;i<arr.length;i++) {
+			if (typeof arr[i] === "function" ) {
+				var group = arr[i].get()
+			} else {
+				var group = [ arr[i] ]
+			}
+			for (var j=0;j<group.length;j++) {
+				note = group[j]
+				if (note>=0) {
+
+					Graph.addNote(note)
+
 				}
 			}
 		}
 	}
 }
 
-vizCode()
-
+/*
 nx.onload = function() {
 	nx.colorize("fill","#222")
 	nx.colorize("accent","#1be")
@@ -202,6 +199,7 @@ nx.onload = function() {
 	//db.setup(Tone.Context,Tone.Master)
 	setInterval(updateKeyboard,100)
 }
+*/
 
 function updateKeyboard() {
 	for (var i=0;i<keyviz.keys.length;i++) {
@@ -215,82 +213,53 @@ function updateKeyboard() {
 
 
 
-/* CYCLE VIZ */
 
-var Cycle = function(arr) {
-	this.data = arr
-	this.parent = document.getElementById("cycles")
-	this.canvas = document.createElement("canvas")
-	this.ctx = this.canvas.getContext("2d")
-	this.diameter = 75
-	this.canvas.height = this.diameter
-	this.canvas.width = this.diameter
-	this.canvas.style.width = this.diameter + "px"
-	this.canvas.style.height = this.diameter + "px"
-	this.canvas.className = "cycle"
-	this.parent.appendChild(this.canvas)
-	this.drawmelody = function() {
-		with(this.ctx) {
-			fillStyle = "#000"
-			fillRect(0,0,this.canvas.width,this.canvas.height)
-			beginPath()
-			fillStyle="#1ce"
-			for (var i=0;i<this.data.length;i++) {
-				var r = (this.diameter/2 - 15) * (this.data[i]/range) + 6
-				var angle = (Math.PI * 2) - ( i / this.data.length ) * Math.PI * 2
-				var loc = toCartesian(r,angle)
-				loc.x += (this.canvas.width/2)
-				loc.y += (this.canvas.height/2)
-				beginPath()
-					ellipse(loc.x,loc.y,1,1,0,Math.PI*2,false)
-					fill()
-				closePath()
-			}
-			strokeStyle = "#1ce"
-			fillStyle="#1ce"
-			lineWidth = 2
-			beginPath()
-				ellipse(this.canvas.width/2,this.canvas.height/2,6,6,0,Math.PI*2,false)
-				stroke()
-				fill()
-			closePath()
-		}
-	}
-	this.drawmelody()
-	this.drawprogress = function(n) {
-		// n is how many notes are left
-		with (this.ctx) {
-			strokeStyle = "#1ce"
-			lineWidth = 2
-			var progress = (this.data.length - n) / this.data.length
-			if (progress > 0) {
-				beginPath()
-					arc(this.canvas.width/2,this.canvas.height/2,this.diameter/2-2,0,progress*Math.PI*2,false)
-					stroke()
-				closePath()
-			}
-		}
-	}
-	this.tempactions = []
-	this.kill = function() {
-		this.tempactions.push( this._kill )
-	}
-	this._kill = function() {
-		this.parent.removeChild(this.canvas)
-	}
-	this.update = function(arr) {
-		this.data = arr
-		this.drawmelody()
-		for (var i=0;i<this.tempactions.length;i++) {
-			this.tempactions[i]()
-		}
-		this.tempactions = []
+
+/* Graphing */
+
+
+var Graph = {
+	addNote: function() {
+
+		var geometry = new THREE.Geometry();
+
+		xloc = VizNotes.length;
+		geometry.vertices.push({
+			x: xloc,
+			y: note-30,
+			z: 0
+		});
+		geometry.vertices.push({
+			x: xloc + 2,
+			y: note-30,
+			z: 0
+		});
+
+		var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 2, linecap: "round"  } ) );
+		scene.add( line );
+		VizNotes.push( line )
+	//	camera.position.z = VizNotes.length
 	}
 }
 
-cycles = []
-//var testmelody = dtm.line(20).repeat(4)
-//cycles.push[ new Cycle(testmelody.get()) ]
+
+
+
+
+//vizCode()
+
+Tone.Transport.start()
+
+
+var Loop = new Tone.Loop(function(time){
+	for (var i=0;i<melodies.length;i++) {
+		melodies[i].engine.next()
+	}
+}, .1)
+
+
+
+
 
 
 
@@ -308,22 +277,17 @@ function indexToNote(index) {
 			break;
 		}
 	}
-	console.log(modaldegree)
 	var midinote = base + octave*12 + modaldegree
 	return midinote
 }
 
-var toPolar = function(x,y) {
-  var r = Math.sqrt(x*x + y*y);
-  var theta = Math.atan2(y,x);
-  if (theta < 0.) {
-    theta = theta + (2 * Math.PI);
-  }
-  return {radius: r, angle: theta};
-}
 
-var toCartesian = function(radius, angle){
-  var cos = Math.cos(angle);
-  var sin = Math.sin(angle);
-  return {x: radius*cos, y: radius*sin*-1};
-}
+
+
+
+/* create textareas
+	that are associated with viz s
+  and have keydown handlers
+
+	nope, just one text area, split by \n\n or \n.\n
+	*/

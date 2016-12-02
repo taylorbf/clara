@@ -3757,7 +3757,35 @@ dtm.transform = {
         return morphFixed(dtm.transform.fit(srcArr, resLen, interp), dtm.transform.fit(tgtArr, resLen), morphIdx);
     },
 
-    interleave: function (srcArr, tgtArr) {
+    /*
+        Interleave two arrays.
+        The resulting array will by twice the length of the longest input array.
+        If input arrays are different lengths, the shorter will repeat.
+     
+        dtm.data(1,2,3,4).interleave(dtm.data(0),1,4)
+        [1,0,0,0,0,2,0,0,0,0,3,0,0,0,0,4,0,0,0,0]
+
+     */
+    interleave: function (srcArr, tgtArr, depth1, depth2) {
+
+        var result = []
+        var newlength = Math.max(srcArr.length,tgtArr.length) * (depth1 + depth2)
+        var index1 = 0
+        var index2 = 0
+        for (var i=0;i<newlength;i++) {
+            for (j=0;j<depth1;j++) {
+                var val = srcArr[index1%srcArr.length]
+                index1++
+                result.push( val )
+            }
+            for (j=0;j<depth2;j++) {
+                var val = tgtArr[index2%tgtArr.length]
+                index2++
+                result.push( val )
+            }
+        }
+        return result
+
     },
 
 
@@ -4225,7 +4253,7 @@ dtm.array = function () {
         'split', 'join',
         'pitchquantize', 'pq', 'mtof', 'ftom',
         'ntob', 'bton', 'itob', 'btoi', 'btot', 'ttob',
-        'size'
+        'size',
     ];
 
     var params = {
@@ -7450,6 +7478,17 @@ dtm.array = function () {
     array.timeToBeats = function (len) {
         return array.set(dtm.transform.indicesToBeats(array.val, len));
     };
+
+    /**
+     * Interleaves two arrays
+     * d1 and d2 are depth (default is 1)
+     */
+    array.interleave = function (arrIn,d1,d2) {
+        d1 = d1 || 1
+        d2 = d2 || 1
+        return array.set(dtm.transform.interleave(array.get(), arrIn.get(), d1, d2));
+    };
+
 
 
     /* aliases */

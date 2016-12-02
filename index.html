@@ -1,34 +1,152 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>Clara</title>
+<html lang="en">
+	<head>
+		<title>Clara</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			a {
+				color:#0078ff;
+			}
+		</style>
+		<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700" rel="stylesheet">
+		<link href="css/player.css" rel="stylesheet"></link>
+		<script src="js/recorder.js"></script>
+	</head>
+	<body>
+
+		<script src="js/three.js"></script>
+		<script src="js/renderers/Projector.js"></script>
+		<script src="js/renderers/CanvasRenderer.js"></script>
+
+		<div id='loading'>
+			<div id='fill'></div>
+		</div>
+		<canvas id="viz" style="display:none"></canvas>
+
+		<textarea class="codeeditor" id="codeeditor">vol: 0.01
+ms: 120
+
+pitch: gen("sine").fit(8).r(20,40).interleave(data(0),1,30)
+vel: 0.5
+dur: 4
+
+pitch: data(0)
+vel: 0.5
+dur: 4
+
+pitch: data(0)
+vel: 0.5
+dur: 4
+
+pitch: data(0)
+vel: 0.5
+dur: 4</textarea>
+
+
+
+		<script>
+
+
+			var windowHalfX = window.innerWidth / 2,
+			windowHalfY = window.innerHeight / 2,
+
+			camera, scene, renderer;
+
+			var material;
+
+			init();
+			animate();
+
+			function init() {
+
+				var container, separation = 100, amountX = 50, amountY = 50,
+				particles, particle;
+
+				container = document.createElement('div');
+				document.body.appendChild(container);
+
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+
+				camera.position.x = 0
+				camera.position.y = -35
+				camera.position.z = 100
+
+				scene = new THREE.Scene();
+
+				renderer = new THREE.CanvasRenderer({antialias:true});
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				// particles
+
+				var PI2 = Math.PI * 2;
+				material = new THREE.SpriteCanvasMaterial( {
+
+					color: 0xffffff,
+					program: function ( context ) {
+
+						context.beginPath();
+						context.arc( 0, 0, 0.2, 0, PI2, true );
+						context.fill();
+
+					}
+
+				} );
+
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+
+			}
+
+			function render() {
+				renderer.render( scene, camera );
+			}
+
+		</script>
+	</body>
+	<script src="js/mt.js"></script>
 	<script type="text/javascript" src="./build/Main.js"></script>
+	<script type="text/javascript" src="js/Tone.js"></script>
 	<script type="text/javascript" src="js/dtm.js"></script>
-	<script type="text/javascript" src="js/nexusUI.js"></script>
-	<script type="text/javascript" src="js/mt.js"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-	<link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
-	<link href="css/main.css" rel="stylesheet"></link>
-</head>
-<body>
+	<script type="text/javascript" src="js/clara.js"></script>
+	<script>
+		var rec = false
 
-	<h1 onclick="eval()"></h1>
+		function DLAudio() {
+			rec.exportWAV(function(blob) {
+				console.log(blob)
+				Recorder.forceDownload(blob,"test.wav")
+			})
+		}
 
-	<div id='loading'>
-		<div id='fill'></div>
-	</div>
-
-	<div id="cycles"></div>
-
-<!--	<canvas nx="meter" id="db"></canvas> -->
-	<canvas nx="keyboard" id="keyviz"></canvas>
-
-	<canvas id="viz"></canvas>
-
-	<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-
-	<input type="text" id="codeeditor" value="a = melody( 10,12,14 )"></input>
-
-</body>
-<script type="text/javascript" src="js/clara.js"></script>
+		rec = new Recorder(piano.Tone.Master)
+	</script>
 </html>
