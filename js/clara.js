@@ -83,7 +83,10 @@ var melodies = []
 for (var i=0;i<4;i++) {
 	melodies[i] = {
 		code: {},
-		engine: new Melody()
+		engine: new Melody(),
+		viz: {
+			notes: []
+		}
 	}
 }
 function codeToData(code) {
@@ -119,7 +122,7 @@ function evalCode() {
 
 codeeditor.addEventListener("keyup",function(e) {
 	if (e.which!=13) {
-	//	vizCode()
+		vizCode()
 	} else {
 		return false
 	}
@@ -143,42 +146,45 @@ function colorItBlue() {
 }
 
 
-var VizNotes = []
 
 function vizCode() {
+	console.log("vizzing...")
 	var parts = codeeditor.value.split('\n\n')
 	var metadata = parts.splice(0,1)
+	var linenumber = codeeditor.value.substr(0, codeeditor.selectionStart).split("\n").length;
 
-	vizmelodies = []
-	for (var i=0;i<parts.length;i++) {
-		vizmelodies[i] = codeToData(parts[i])
-	}
-
-	data = codeToData()
-	var tempmelody = false
 	try {
-		tempmelody = eval("with (dtm) {"+data.pitch+"}")
-	} catch(e) {
+		for (var i=0;i<parts.length;i++) {
+			melodies[i].viz.code = codeToData(parts[i])
+			var mel = melodies[i].viz.code
+			melodies[i].viz.pitch = new Pattern(mel.pitch)
+			melodies[i].viz.vel = new Pattern(mel.vel)
+			melodies[i].viz.dur = new Pattern(mel.dur)
+		}
+	} catch (e) {
+		console.log(e)
 		return
 	}
-	if (tempmelody) {
-		for (var i=0;i<VizNotes.length;i++) {
-			scene.remove(VizNotes[i])
-		}
-		VizNotes = []
-		arr = tempmelody.get()
-		for (var i=0;i<arr.length;i++) {
-			if (typeof arr[i] === "function" ) {
-				var group = arr[i].get()
-			} else {
-				var group = [ arr[i] ]
+	for (var i=0;i<melodies.length;i++) {
+		console.log(i)
+		var mel = melodies[i].viz
+		if (mel.pitch) {
+			for (var j=0;j<mel.notes.length;j++) {
+				scene.remove(mel.notes[j])
 			}
-			for (var j=0;j<group.length;j++) {
-				note = group[j]
-				if (note>=0) {
-
-					Graph.addNote(note)
-
+			mel.notes = []
+			var arr = mel.pitch.arr
+			for (var k=0;k<arr.length;k++) {
+				if (typeof arr[k] === "function" ) {
+					var group = arr[k].get()
+				} else {
+					var group = [ arr[k] ]
+				}
+				for (var j=0;j<group.length;j++) {
+					var note = group[j]
+					if (note>=0) {
+						Graph.addNote(note,mel)
+					}
 				}
 			}
 		}
@@ -219,11 +225,11 @@ function updateKeyboard() {
 
 
 var Graph = {
-	addNote: function() {
+	addNote: function(note,mel) {
 
 		var geometry = new THREE.Geometry();
 
-		xloc = VizNotes.length;
+		xloc = mel.notes.length;
 		geometry.vertices.push({
 			x: xloc,
 			y: note-30,
@@ -237,7 +243,7 @@ var Graph = {
 
 		var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 2, linecap: "round"  } ) );
 		scene.add( line );
-		VizNotes.push( line )
+		mel.notes.push( line )
 	//	camera.position.z = VizNotes.length
 	}
 }
@@ -246,7 +252,6 @@ var Graph = {
 
 
 
-//vizCode()
 
 Tone.Transport.start()
 
@@ -280,14 +285,3 @@ function indexToNote(index) {
 	var midinote = base + octave*12 + modaldegree
 	return midinote
 }
-
-
-
-
-
-/* create textareas
-	that are associated with viz s
-  and have keydown handlers
-
-	nope, just one text area, split by \n\n or \n.\n
-	*/
