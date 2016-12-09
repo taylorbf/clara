@@ -13,6 +13,37 @@ var a,b,c,d,e,f,g
 var codeeditor = document.getElementById("codeeditor")
 
 
+
+/*
+//397
+function time2() {
+	timer = Date.now()
+	for (var i=0;i<1000;i++) {
+		dtm.data(0,1,2,3,4,5)
+	//	x = new Float32Array(1000)
+	//	x = dtm.gen("noise").rep(1000).get().length
+	}
+	timer = Date.now() - timer
+	console.log(timer)
+}
+	//400
+	//with (dtm) { data(0,1,2,3,4).r().rep(20)  }
+	//400
+	//dtm.data(0,1,2,3,4).r().rep(20)
+	//1
+	//x = [0,1,2,3,4]
+	// 350
+	// x = dtm.data(0)
+	// 200 when remove fn.foreach
+	// 20 when removing all array methods
+	// 200 when removeing 1/2 of array methods
+*/
+
+
+
+
+
+
 function Pattern(code) {
 	this.next = function() {
 		if (this.arr.length<=0) {
@@ -30,8 +61,19 @@ function Pattern(code) {
 		}
 		this.arr = this.arr.get()
 	}
+	this.getRange = function(range) {
+		var output = []
+		while (output.length < range) {
+			//this.update(this.code)
+			//output = output.concat(this.arr)
+			output.push(this.arr[output.length%this.arr.length])
+		}
+		return output
+	}
 	this.update(code)
 }
+
+
 
 function Melody(patterns) {
 	this.next = function() {
@@ -155,35 +197,50 @@ function vizCode() {
 
 	try {
 		for (var i=0;i<parts.length;i++) {
-			melodies[i].viz.code = codeToData(parts[i])
-			var mel = melodies[i].viz.code
-			melodies[i].viz.pitch = new Pattern(mel.pitch)
-			melodies[i].viz.vel = new Pattern(mel.vel)
-			melodies[i].viz.dur = new Pattern(mel.dur)
+			if (melodies[i].viz.text != parts[i]) {
+				melodies[i].viz.text = parts[i]
+				melodies[i].viz.code = codeToData(parts[i])
+				var mel = melodies[i].viz.code
+				melodies[i].viz.pitch = new Pattern(mel.pitch)
+				melodies[i].viz.vel = new Pattern(mel.vel)
+				melodies[i].viz.dur = new Pattern(mel.dur)
+				melodies[i].viz.changed = true
+			} else {
+				melodies[i].viz.changed = false
+			}
 		}
 	} catch (e) {
 		console.log(e)
 		return
 	}
 	for (var i=0;i<melodies.length;i++) {
-		console.log(i)
-		var mel = melodies[i].viz
-		if (mel.pitch) {
-			for (var j=0;j<mel.notes.length;j++) {
-				scene.remove(mel.notes[j])
-			}
-			mel.notes = []
-			var arr = mel.pitch.arr
-			for (var k=0;k<arr.length;k++) {
-				if (typeof arr[k] === "function" ) {
-					var group = arr[k].get()
-				} else {
-					var group = [ arr[k] ]
+		if (melodies[i].viz.changed) {
+			console.log(i)
+			var mel = melodies[i].viz
+			if (mel.pitch) {
+				for (var j=0;j<mel.notes.length;j++) {
+					scene.remove(mel.notes[j])
 				}
-				for (var j=0;j<group.length;j++) {
-					var note = group[j]
-					if (note>=0) {
-						Graph.addNote(note,mel)
+				mel.notes = []
+				// will show next x notes
+				var pitches = mel.pitch.getRange(400)
+				var vels = mel.vel.getRange(400)
+				var durs = mel.dur.getRange(400)
+
+				console.log(pitches)
+
+				for (var k=0;k<pitches.length;k++) {
+					var pitch = pitches[k]
+					var vel = vels[k]
+					var dur = durs[k]
+					if (typeof pitch === "function" ) {
+						var group = pitch.get()
+					} else {
+						var group = [ pitch ]
+					}
+					for (var j=0;j<group.length;j++) {
+						var note = group[j]
+						Graph.addNote(note,dur,vel,mel)
 					}
 				}
 			}
@@ -225,7 +282,13 @@ function updateKeyboard() {
 
 
 var Graph = {
-	addNote: function(note,mel) {
+	addNote: function(note,dur,vel,mel) {
+
+		if (note <= 0) {
+			var op = 0
+		} else {
+			var op = 1
+		}
 
 		var geometry = new THREE.Geometry();
 
@@ -236,12 +299,12 @@ var Graph = {
 			z: 0
 		});
 		geometry.vertices.push({
-			x: xloc + 2,
+			x: xloc + dur,
 			y: note-30,
 			z: 0
 		});
 
-		var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 2, linecap: "round"  } ) );
+		var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: op, linewidth: vel*10, linecap: "round"  } ) );
 		scene.add( line );
 		mel.notes.push( line )
 	//	camera.position.z = VizNotes.length
@@ -250,7 +313,7 @@ var Graph = {
 
 
 
-
+vizCode()
 
 
 Tone.Transport.start()

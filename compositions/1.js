@@ -177,4 +177,20 @@ pitch: data(34).rep(31)
 vel: gen("sine").fit(50).r(0,0.5)
 dur: 0.1
 
+
+
+===============
+
+pitch: gen("sine").fit(8).r(20,40).interleave(data(0),1,30)
+vel: 0.1
+dur: 4
+
+pitch: gen("sine").fit(8).r(10,30).interleave(data(0),1,30)
+vel: 0.1
+dur: 4
+
+pitch: data(12).rep(100).interleave(data(0),1,30)
+vel: 0.1
+dur: 10
+
 */

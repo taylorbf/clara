@@ -1869,7 +1869,7 @@ dtm.generator = function () {
     // extend the dtm.array module
     var generator = dtm.array();
 
-    var params = generator.meta.getParams();
+    var params = generator.meta.getParams()
     objForEach(paramsExt, function (val, key) {
         params[key] = val;
     });
@@ -4207,55 +4207,56 @@ dtm.tr = dtm.transform;
  */
 dtm.array = function () {
     var fnList = [
-        'label', 'parent',
-        'morph', 'reset', 'save', 'residue', 'flush', 'clear',
-        'normalize', 'n', 'range', 'r', 'limit', 'clip',
-        'expcurve', 'expc', 'logcurve', 'logc',
-        'fit', 'f', 'stretch', 'str', 's',
-        'phase', 'interp',
-        'line', 'step', 'cubic', 'cos',
-        'freq', 'amp', 'gain', 'fir',
-        'add', 'subtract', 'mult', 'dot', 'divide', 'div',
-        'reciprocal', 'recip', 'pow', 'powof', 'log',
-        'min', 'max', 'extent',
-        'mean', 'avg', 'mode', 'median', 'midrange', 'mid',
-        'std', 'pstd', 'var', 'pvar',
-        'rms',
-        'linreg', 'covar', 'cov', 'corr', 'amdf',
-        'sum', 'fitsum',
-        'entropy',
-        'filter', 'find', 'sort', 'sortby',
-        'reduce', 'some', 'every',
-        'subarray', 'match',
-        'replace', 'select', 'sel',
-        'concat', 'cat', 'append', 'app', 'prepend',
-        'remove', 'removeempty',
-        'repeat', 'rep', 'fitrep', 'frep',
-        'pad',
-        'truncate',
-        'block', 'b', 'group', 'g',
-        'nest', 'unnest', 'un', 'unblock', 'ub', 'u', 'flatten',
-        'ola', 'window', 'win',
-        'copy', 'seg',
-        'shift', 'mirror', 'mirr', 'mir',
-        'reverse', 'rev',
-        'invert', 'inv',
-        'shuffle', 'randomize',
-        'reorder', 'order',
-        'queue', 'fifo',
-        'round', 'floor', 'ceil', 'hwr', 'fwr', 'abs', 'modulo', 'mod',
-        'mse', 'snr', 'dbsnr', 'diff', 'editdist',
-        'dct', 'idct',
-        'randomtrigger', 'randtrig',
-        'unique', 'classify',
-        'classify', 'stringify', 'tonumber', 'tonum', 'toFloat32',
-        'morethan', 'mt', 'mtet', 'lessthan', 'lt', 'ltet',
-        'split', 'join',
-        'pitchquantize', 'pq', 'mtof', 'ftom',
-        'ntob', 'bton', 'itob', 'btoi', 'btot', 'ttob',
-        'size',
+        'mult',
+            'mult',
+                'mult',
+                    'mult',
+                        'mult',
+                            'mult',
+                                'mult',
+                                    'mult',
+                                        'mult',
+                                            'mult',
+                                                'mult',
+                                                    'mult',
+                                                        'mult',
+                                                            'mult',
+                                                                'mult',
+                                                                    'mult',
+                                                                        'mult',
+                                                                            'mult',
+                                                                                'mult',
+                                                                                    'mult',
+                                                                                        'mult',
+                                                                                            'mult',
+                                                                                                'mult',
+                                                                                                    'mult',
+                                                                                                        'mult',
+                                                                                                            'mult',
+                                                                                                                'mult',
+                                                                                                                    'mult',
+                                                                                                                        'mult',
+                                                                                                                            'mult',
+                                                                                                                                'mult',
+                                                                                                                                    'mult',
+                                                                                                                                        'mult',
+                                                                                                                                            'mult',
+                                                                                                                                                'mult',
+                                                                                                                                                    'mult',
+                                                                                                                                                        'mult',
+                                                                                                                                                            'mult',
+                                                                                                                                                                'mult',
+                                                                                                                                                                    'mult',
+                                                                                                                                                                        'mult',
+                                                                                                                                                                            'mult',
+                                                                                                                                                                                'mult',
+                                                                                                                                                                                    'mult',
+                                                                                                                                                                                        'mult',
+                                                                                                                                                                                            'mult',
+                                                                                                                                                                                                'mult',
+                                                                                                                                                                                                    'mult'
     ];
-
+/*
     var params = {
         name: '',
         type: null, // number, string, boolean, coll, mixed, date
@@ -4276,7 +4277,8 @@ dtm.array = function () {
         hash: '',
         processed: 0
     };
-
+*/
+//    var array = []
     var array = function (fn) {
         if (isFunction(fn)) {
             fn(array);
@@ -4285,7 +4287,7 @@ dtm.array = function () {
             return array.clone.apply(this, arguments);
         }
     }; // this makes .name() not overridable?
-
+/*
     Object.defineProperty(array, 'name', {
         enumerable: false,
         writable: true,
@@ -4299,7 +4301,7 @@ dtm.array = function () {
         configurable: true,
         value: 0
     });
-
+*/
     array.meta = {
         type: 'dtm.array',
         getParams: function () {
@@ -4317,7 +4319,7 @@ dtm.array = function () {
         }
     };
 
-    array.val = [];
+  /*  array.val = [];
     array.length = 0;
     array.undoStack = [];
 
@@ -4327,7 +4329,7 @@ dtm.array = function () {
      * @function module:array#get
      * @param [param] {string|number} If no argument is given, returns the array content. If given a number, returns the value at the index. If given a valid string, the value / stats / etc. is returned. Possible string keys are as follows: name|key, type, len|length, min|minimum, max|maximum, minmax|range, mean|avg|average, mode, median, midrange, std, pstd, var|variance, pvar, rms, cur|current|now, next, pver|previous, rand|random, idx|index, hop|step|stepSize, loc|location|relative, block|window (with 1|2 following numbers), blockNext, original, normal|normalize|normalized, sort|sorted, uniq|unique|uniques, classes, classID, string|stringify, numClasses|numUniques, unif|uniformity, histo|histogram
      * @returns {number|array|string}
-     */
+*/
     array.get = function (param) {
         if (isNumber(param)) {
             // TODO: support multiple single val arguments?
@@ -4452,7 +4454,7 @@ dtm.array = function () {
                         break;
                     }
 
-                /* STATS */
+                // STATS
                 case 'minimum':
                 case 'min':
                     return getMin(array.val);
@@ -4504,7 +4506,7 @@ dtm.array = function () {
                 case 'entropy':
                     return array.clone().entropy().get();
 
-                /* ITERATORS */
+                // ITERATORS
                 case 'current':
                 case 'curr':
                 case 'cur':
@@ -4580,7 +4582,7 @@ dtm.array = function () {
                     blockArray = dtm.transform.getBlock(array.val, params.index, arguments[1]);
                     return dtm.array(blockArray);
 
-                /* TRANSFORMED LIST */
+                // TRANSFORMED LIST
                 case 'original':
                     return params.original;
                     break;
@@ -4656,13 +4658,7 @@ dtm.array = function () {
             return array.val;
         }
     };
-
-    /**
-     * Returns an inner array specified by the index or the name. Note that this will always clone the array, so the further edit on the returned array will not affect the original array.
-     * @function module:array:col
-     * @param which
-     * @returns {*}
-     */
+/*
     array.col = function (which) {
         if (isNestedDtmArray(array)) {
             if (isString(which)) {
@@ -4686,11 +4682,6 @@ dtm.array = function () {
 
     array.column = array.col;
 
-    /**
-     * Returns a row of a nested array by the index.
-     * @param num
-     * @returns {dtm.array}
-     */
     array.row = function (num) {
         return array.set(array.get('row', num));
     };
@@ -4795,12 +4786,7 @@ dtm.array = function () {
     };
 
     array.t = array.transp;
-
-    /**
-     * Sets or overwrites the contents of the array object.
-     * @function module:array#set
-     * @returns {dtm.array}
-     */
+*/
     array.set = function () {
         if (arguments.length === 0) {
             return array;
@@ -4876,12 +4862,7 @@ dtm.array = function () {
         return array;
     };
 
-    /**
-     * Sets the name of the array object.
-     * @function module:array#name
-     * @param name {string}
-     * @returns {dtm.array}
-     */
+
     array.label = function (name) {
         if (isString(name)) {
             params.name = name;
@@ -4890,7 +4871,7 @@ dtm.array = function () {
     };
 
     array.name = array.label;
-
+/*
     array.keys = function () {
         if (isNestedDtmArray(array)) {
             return array.set(array.get('keys'));
@@ -4909,12 +4890,7 @@ dtm.array = function () {
         }
     };
 
-    /**
-     * Sets the value type of the array content. Should be either 'number' or 'string'?
-     * @function mudule:array#valuetype
-     * @param arg
-     * @returns {dtm.array}
-     */
+
     array.valuetype = function (arg) {
         if (isString(arg)) {
             params.type = arg;
@@ -4955,12 +4931,7 @@ dtm.array = function () {
         //array.type = res;
     }
 
-    /**
-     * Sets the size of the iteration step.
-     * @function module:array#stepsize
-     * @param val {number}
-     * @returns {dtm.array}
-     */
+
     array.stepsize = function (val) {
         if (isInteger(val) && val > 0) {
             params.step = val;
@@ -4968,12 +4939,7 @@ dtm.array = function () {
         return array;
     };
 
-    /**
-     * Sets the current index within the array for the iterator. Value exceeding the max or min value will be wrapped around.
-     * @function module:array#index
-     * @param val {number}
-     * @returns {dtm.array}
-     */
+
     array.index = function (val) {
         if (isNumber(val)) {
             params.index = mod(Math.round(val), array.length);
@@ -4981,12 +4947,7 @@ dtm.array = function () {
         return array;
     };
 
-    /* GENERATORS */
-    /**
-     * Returns a copy of the array object. It can be used when you don't want to reference the same array object from different places. For convenience, you can also do arrObj() instead of arrObj.clone() to quickly return a copy.
-     * @function module:array#clone
-     * @returns {dtm.array}
-     */
+
     array.clone = function () {
         if (arguments.length === 0) {
             var newValue = [];
@@ -5058,7 +5019,7 @@ dtm.array = function () {
      * @param [morphIdx=0.5] {number} between 0-1
      * @param [interp='linear'] {string}
      * @returns {dtm.array}
-     */
+
     array.morph = function (tgtArr, morphIdx, interp) {
         if (isNumDtmArray(tgtArr)) {
             tgtArr = tgtArr.val;
@@ -5103,7 +5064,7 @@ dtm.array = function () {
      * Retrieves the original values from when the array object was first created.
      * @function module:array#reset
      * @returns {dtm.array}
-     */
+
     array.reset = function () {
         return array.set(params.original);
     };
@@ -5111,7 +5072,7 @@ dtm.array = function () {
     /**
      * Overwrites the "original" state with the current state.
      * @returns {dtm.array}
-     */
+
     array.save = function () {
         return array.meta.setOriginal(array.val);
     };
@@ -5122,11 +5083,7 @@ dtm.array = function () {
 
     array.res = array.residue;
 
-    /**
-     * Clears all the contents of the array object.
-     * @function module:array#flush | clear
-     * @returns {dtm.array}
-     */
+
     array.flush = function () {
         return array.set([]);
     };
@@ -5141,7 +5098,7 @@ dtm.array = function () {
      * @param [arg1] {number} Prefered domain minimum value. If not present, the minimum of the input array is used.
      * @param [arg2] {number} Prefered domain maximum value. If not present, the maximum of the input array is used.
      * @returns {dtm.array}
-     */
+
     array.normalize = function (arg1, arg2) {
         var min, max, args;
 
@@ -5210,7 +5167,7 @@ dtm.array = function () {
      * // or
      * dtm.array([1, 2, 3]).range(0, 10, 0, 5).get();
      * -> [2, 4, 6]
-     */
+
     array.range = function (arg1, arg2, arg3, arg4) {
         var min, max, dmin, dmax;
 
@@ -5366,7 +5323,7 @@ dtm.array = function () {
 
        return array.set(dtm.transform.rescale(array.val, min, max, dmin, dmax));
    };
-   */
+
 
     array.unipolar = function () {
         return array.range(0, 1);
@@ -5459,7 +5416,7 @@ dtm.array = function () {
      * @param [min=0]
      * @param [max=1]
      * @returns {dtm.array}
-     */
+
     array.limit = function (min, max) {
         if (isNumOrFloat32Array(array.val)) {
             min = min || 0;
@@ -5479,7 +5436,7 @@ dtm.array = function () {
      * @param [min=array.get('min')] {number}
      * @param [max=array.get('max')] {number}
      * @returns {dtm.array}
-     */
+
     array.expcurve = function (factor, min, max) {
         if (isEmpty(min)) {
             min = array.get('min');
@@ -5501,7 +5458,7 @@ dtm.array = function () {
      * @param [min=array.get('min')] {number}
      * @param [max=array.get('max')] {number}
      * @returns {dtm.array}
-     */
+
     array.logcurve = function (factor, min, max) {
         if (isEmpty(min)) {
             min = array.get('min');
@@ -5522,7 +5479,7 @@ dtm.array = function () {
      * @param factor
      * @param [min]
      * @param [max]
-     */
+
     array.curve = function (factor, min, max) {
         return array;
     };
@@ -5533,7 +5490,7 @@ dtm.array = function () {
      * @param len {number} Integer
      * @param [interp='linear'] {string}
      * @returns {dtm.array}
-     */
+
     array.fit = function (len, interp) {
         if (isNestedDtmArray(array)) {
             return array.map(function (a) {
@@ -5576,7 +5533,7 @@ dtm.array = function () {
      * @param factor {number}
      * @param [interp='linear'] {string}
      * @returns {dtm.array}
-     */
+
     array.stretch = function (factor, interp) {
         if (isNestedDtmArray(array)) {
             return array.map(function (a) {
@@ -5607,15 +5564,6 @@ dtm.array = function () {
         return array.stretch(factor, 'cos');
     };
 
-    /**
-     * Adds a value to all the array elements.
-     * @function module:array#add
-     * @param factor {number|array|dtm.array}
-     * @param [interp='step'] {string}
-     * @returns {dtm.array}
-     * @example
-     * <div> hey </div>
-     */
     array.add = function (factor, interp) {
         if (!isString(interp)) {
             interp = 'step';
@@ -5675,14 +5623,7 @@ dtm.array = function () {
             return array.set(dtm.transform.subtract(array.val, factor, interp));
         }
     };
-
-    /**
-     * Scales the numerical array contents.
-     * @function module:array#mult
-     * @param factor {number|array|dtm.array}
-     * @param [interp='step'] {string}
-     * @returns {dtm.array}
-     */
+*/
     array.mult = function (factor, interp) {
         if (!isString(interp)) {
             interp = 'step';
@@ -5712,7 +5653,7 @@ dtm.array = function () {
             return array.set(dtm.transform.mult(array.val, factor, interp));
         }
     };
-
+/*
     array.dot = array.mult;
 
     array.amp = function (input) {
@@ -5784,7 +5725,7 @@ dtm.array = function () {
      * @param factor {number|array|dtm.array}
      * @param [interp='linear'] {string}
      * @returns {dtm.array}
-     */
+
     array.pow = function (factor, interp) {
         if (isNumDtmArray(factor)) {
             factor = factor.get();
@@ -5798,7 +5739,7 @@ dtm.array = function () {
      * @param factor {number|array|dtm.array}
      * @param [interp='linear'] {string}
      * @returns {dtm.array}
-     */
+
     array.powof = function (factor, interp) {
         if (isNumDtmArray(factor)) {
             factor = factor.get();
@@ -5813,7 +5754,7 @@ dtm.array = function () {
         return array.set(dtm.transform.log(array.val, base, interp));
     };
 
-    /* CONVERSION WITH STATS */
+    /* CONVERSION WITH STATS
     array.min = function (fn) {
         if (isFunction(fn)) {
             var res = getMin(array.val.map(function (v) {
@@ -6275,7 +6216,7 @@ dtm.array = function () {
      * @param tgt {number} If the round argument is true, the target value is also rounded.
      * @param [round=false] {boolean}
      * @returns {dtm.array}
-     */
+
     array.fitsum = function (tgt, round, min) {
         return array.set(dtm.transform.fitSum(array.val, tgt, round));
     };
@@ -6284,15 +6225,7 @@ dtm.array = function () {
 
     };
 
-    /* LIST OPERATIONS*/
 
-    // TODO: support for the optional 'this' argument (see the JS Array documentation)
-    /**
-     * Performs JS Array.map function to the array values.
-     * @function module:array#map
-     * @param fn
-     * @returns {dtm.array}
-     */
     array.map = function (fn) {
         //return array.set(array.val.map(callback));
         return array.set(fromFloat32Array(array.val).map(fn));
@@ -6324,7 +6257,7 @@ dtm.array = function () {
         params.type = 'string'; // re-set the type to string from number
         return array.set(toFloat32Array(histo(array.val)));
     };
-
+*/
     array.foreach = function (fn) {
         array.val.forEach(fn);
         return array;
@@ -6369,7 +6302,7 @@ dtm.array = function () {
             }
         };
     });
-
+/*
     array.filter = function (fn) {
         return array.set(array.val.filter(fn));
     };
@@ -6404,7 +6337,7 @@ dtm.array = function () {
      * Sorts the contents of numerical array.
      * @function module:array#sort
      * @returns {dtm.array}
-     */
+
     array.sort = function (fn) {
         if (isEmpty(fn)) {
             return array.set(dtm.transform.sort(array.val));
@@ -6540,7 +6473,7 @@ dtm.array = function () {
      * @function module:array#concat | append
      * @param arr {array | dtm.array} A regular array or a dtm.array object.
      * @returns {dtm.array}
-     */
+
     array.concat = function (arr) {
         if (isEmpty(arr)) {
             arr = [];
@@ -6574,7 +6507,7 @@ dtm.array = function () {
      * @function module:array#repeat | rep
      * @param count {number} Integer
      * @returns {dtm.array}
-     */
+
     array.repeat = function (count) {
         if (isDtmArray(count) && count.get('len') === 1) {
             count = count.get(0);
@@ -6607,12 +6540,7 @@ dtm.array = function () {
 
     array.frep = array.fitrep;
 
-    /**
-     * @function module:array#pad
-     * @param val
-     * @param length
-     * @returns {{type: string}}
-     */
+
     array.pad = function (val, length) {
         var test = [];
         for (var i = 0; i < length; i++) {
@@ -6622,13 +6550,7 @@ dtm.array = function () {
         return array.concat(test);
     };
 
-    /**
-     * Truncates some values either at the end or both at the beginning and the end.
-     * @function module:array#truncate
-     * @param arg1 {number} Start bits to truncate. If the arg2 is not present, it will be the end bits to truncate.
-     * @param [arg2] {number} End bits to truncate.
-     * @returns {dtm.array}
-     */
+
     array.truncate = function (arg1, arg2) {
         return array.set(dtm.transform.truncate(array.val, arg1, arg2));
     };
@@ -6757,7 +6679,7 @@ dtm.array = function () {
      * @function module:array#window
      * @param type
      * @returns {dtm.array}
-     */
+
     array.window = function (type) {
         if (isNestedDtmArray(array)) {
             return array.map(function (a) {
@@ -6824,66 +6746,39 @@ dtm.array = function () {
         return array;
     };
 
-    /**
-     * Shifts the indexing position of the array by the amount.
-     * @function module:array#shift
-     * @param amount {number} Integer
-     * @returns {dtm.array}
-     */
+
     array.shift = function (amount) {
         return array.set(dtm.transform.shift(array.val, amount));
     };
 
-    /**
-     * Appends an reversed array at the tail.
-     * @function module:array#mirror
-     * @returns {{type: string}}
-     */
+
     array.mirror = function () {
         return array.concat(dtm.transform.reverse(array.val));
     };
 
     array.mir = array.mirr = array.mirror;
 
-    /**
-     * Flips the array contents horizontally.
-     * @function module:array#reverse | rev
-     * @returns {dtm.array}
-     */
+
     array.reverse = function () {
         return array.set(dtm.transform.reverse(array.val));
     };
 
     array.rev = array.reverse;
 
-    /**
-     * Flips the numerical values vertically at the given center point.
-     * @function module:array#invert | inv | flip
-     * @param [center=meanVal] {number}
-     * @returns {dtm.array}
-     */
+
     array.invert = function (center) {
         return array.set(dtm.transform.invert(array.val, center));
     };
 
-    /**
-     * Same as array.invert().
-     * @function module:array#inv
-     * @type {Function}
-     */
     array.inv =  array.invert;
 
-    /**
-     * Randomizes the order of the array.
-     * @function module:array#shuffle | random | randomize | rand
-     * @returns {dtm.array}
-     */
     array.shuffle = function () {
         return array.set(dtm.transform.shuffle(array.val));
     };
 
     array.randomize = array.shuffle;
 
+    /*
     array.reorder = function () {
         var indices;
 
@@ -6906,12 +6801,7 @@ dtm.array = function () {
 
     array.order = array.reorder;
 
-    /**
-     * Adds new value(s) at the end of the array, and removes the oldest value(s) at the beginning of the array. The size of the array is unchanged.
-     * @function module:array#queue | fifo
-     * @param input {number|array}
-     * @returns {dtm.array}
-     */
+
     array.queue = function (input) {
         if (isNumber(input)) {
             array.val.push(input);
@@ -6936,14 +6826,7 @@ dtm.array = function () {
 
     array.fifo = array.queue;
 
-    /* ARITHMETIC */
 
-    /**
-     * Rounds float values of the array to integer values.
-     * @function module:array#round
-     * @param to {number}
-     * @returns {dtm.array}
-     */
     array.round = function (to) {
         return array.set(dtm.transform.round(array.val, to));
     };
@@ -6952,7 +6835,7 @@ dtm.array = function () {
      * Quantizes float numbers to integer by flooring.
      * @function module:array#floor
      * @returns {dtm.array}
-     */
+
     array.floor = function () {
         return array.set(dtm.transform.floor(array.val));
     };
@@ -6961,7 +6844,7 @@ dtm.array = function () {
      * Quantizes float numbers to integer by ceiling.
      * @function module:array#ceil
      * @returns {dtm.array}
-     */
+
     array.ceil = function () {
         return array.set(dtm.transform.ceil(array.val));
     };
@@ -6970,7 +6853,7 @@ dtm.array = function () {
      * Half-wave rectify the values, modifying all negative values to 0.
      * @function module:array#hwr
      * @returns {dtm.array}
-     */
+
     array.hwr = function () {
         return array.set(dtm.transform.hwr(array.val));
     };
@@ -6979,7 +6862,7 @@ dtm.array = function () {
      * Full-wave rectify the values, returning absolute values.
      * @function module:array#fwr | abs
      * @returns {dtm.array}
-     */
+
     array.fwr = function () {
         return array.set(dtm.transform.fwr(array.val));
     };
@@ -6995,7 +6878,7 @@ dtm.array = function () {
     /**
      * Calculates the mean-square-error. If no argument is given, it will take the current array state as the modified value, and calculates the distortion from the original (initial state) value of itself. This would be useful for choosing quantization or transformation methods with less distortion to the data.
      * @returns {dtm.array}
-     */
+
     array.mse = function () {
         if (arguments.length === 0) {
             if (!isNestedDtmArray(array)) {
@@ -7036,7 +6919,7 @@ dtm.array = function () {
     /**
      * @function module:array#diff
      * @returns {dtm.array}
-     */
+
     array.diff = function (order, pad) {
         if (!isInteger(order) || order < 1) {
             order = 1;
@@ -7060,19 +6943,6 @@ dtm.array = function () {
             return array;
         }
     };
-
-    // /**
-    //  * Removes zeros from the sequence.
-    //  * @function module:array#removezeros
-    //  * @returns {dtm.array}
-    //  */
-    // array.removezeros = function () {
-    //     return array.set(dtm.transform.removeZeros(array.val));
-    // };
-    //
-    // array.removevalue = function () {
-    //     return array;
-    // };
 
     array.dct = function () {
         if (isNumDtmArray(array)) {
@@ -7150,7 +7020,7 @@ dtm.array = function () {
      * Generates a histogram from a nominal array, such as the string type.
      * @function module:array#histogram
      * @returns {dtm.array}
-     */
+
     array.histogram = function () {
         // CHECK: this is hacky
         params.type = 'string'; // re-set the type to string from number
@@ -7160,7 +7030,7 @@ dtm.array = function () {
     /**
      * Probability mass function
      * @returns {dtm.array}
-     */
+
     array.pmf = function () {
         if (!isNestedDtmArray(array)) {
             return array.count().mult(1/array.get('sum'));
@@ -7187,7 +7057,7 @@ dtm.array = function () {
     /**
      *
      * @returns {*}
-     */
+
     array.randomtrigger = function (dist) {
         if (!isString(dist)) {
             dist = 'uniform';
@@ -7224,7 +7094,7 @@ dtm.array = function () {
      * Overwrites the contents with unsorted unique values of the array.
      * @function module:array#uniq | unique
      * @returns {dtm.array}
-     */
+
     array.unique = function () {
         return array.set(dtm.transform.unique(array.val));
     };
@@ -7234,7 +7104,7 @@ dtm.array = function () {
      * @function module:array#classify
      * @param by
      * @returns {dtm.array}
-     */
+
     array.classify = function (by) {
         return array.set(dtm.transform.classId(array.val));
     };
@@ -7243,7 +7113,7 @@ dtm.array = function () {
      * Converts the array values (such as numbers) into string format.
      * @function module:array#stringify | tostring
      * @returns {dtm.array}
-     */
+
     array.stringify = function () {
         return array.set(dtm.transform.stringify(array.val));
     };
@@ -7252,7 +7122,7 @@ dtm.array = function () {
      * Converts string or boolean values to numerical values.
      * @function module:array#tonumber | toNumber
      * @returns {dtm.array}
-     */
+
     array.tonumber = function () {
         if (isParsableNumArray(array.val) || isBoolArray(array.val)) {
             return array.set(toFloat32Array(dtm.transform.tonumber(array.val)));
@@ -7345,13 +7215,13 @@ dtm.array = function () {
         }
     };
 
-    /* STRING OPERATIONS */
+    /* STRING OPERATIONS
 
     /**
      * Separates the array items into new array using the separator
      * @param [separator=''] {string}
      * @returns dtm.array
-     */
+
     array.split = function (separator) {
         return array.set(dtm.transform.split(array.val, separator));
     };
@@ -7377,14 +7247,14 @@ dtm.array = function () {
         return array.set(res);
     };
 
-    /* MUSICAL */
+    /* MUSICAL
 
     /**
      * Pitch quantize the array values. Shorthand: array.pq
      * @function module:array#pitchquantize
      * @param scale {array|dtm.array} A numerical or string (solfa -- e.g., 'do' or 'd' instead of 0) denoting the musical scale degrees.
      * @returns {dtm.array}
-     */
+
     array.pitchquantize = function (scale) {
         if (isNestedDtmArray(array)) {
             return array.map(function (a) {
@@ -7413,14 +7283,14 @@ dtm.array = function () {
 
 
 
-    /* UNIT CONVERTERS */
+    /* UNIT CONVERTERS
 
     /**
      * Converts note values into a beat sequence.
      * @function module:array#notesToBeats | ntob
      * @param [resolution=4] {number}
      * @returns {dtm.array}
-     */
+
     array.notesToBeats = function (resolution) {
         resolution = resolution || 4;
         return array.set(dtm.transform.notesToBeats(array.val, resolution));
@@ -7431,7 +7301,7 @@ dtm.array = function () {
      * @function module:array#beatsToNotes | bton
      * @param [resolution=4] {number}
      * @returns {dtm.array}
-     */
+
     array.beatsToNotes = function (resolution) {
         resolution = resolution || 4;
         return array.set(dtm.transform.beatsToNotes(array.val, resolution));
@@ -7441,7 +7311,7 @@ dtm.array = function () {
      * Converts intervalic values into a beat sequence.
      * @function module:array#intervalsToBeats | itob
      * @returns {dtm.array}
-     */
+
     array.intervalsToBeats = function (arr) {
         var ampseq;
 
@@ -7457,7 +7327,7 @@ dtm.array = function () {
      * Converts beat sequence into intervalic values.
      * @function module:array#beatsToIntervals | btoi
      * @returns {dtm.array}
-     */
+
     array.beatsToIntervals = function () {
         return array.set(dtm.transform.beatsToIntervals(array.val));
     };
@@ -7465,7 +7335,7 @@ dtm.array = function () {
      * Converts beat sequence into an array of indices (or delays or onset-coordinate vectors.) Useful for creating time delay-based events.
      * @function module:array#beatsToTime
      * @returns {dtm.array}
-     */
+
     array.beatsToTime = function () {
         return array.set(dtm.transform.beatsToIndices(array.val));
     };
@@ -7474,7 +7344,7 @@ dtm.array = function () {
      * function module:array#timeToBeats
      * @param [len]
      * @returns {dtm.array}
-     */
+
     array.timeToBeats = function (len) {
         return array.set(dtm.transform.indicesToBeats(array.val, len));
     };
@@ -7482,7 +7352,7 @@ dtm.array = function () {
     /**
      * Interleaves two arrays
      * d1 and d2 are depth (default is 1)
-     */
+
     array.interleave = function (arrIn,d1,d2) {
         d1 = d1 || 1
         d2 = d2 || 1
@@ -7491,7 +7361,7 @@ dtm.array = function () {
 
 
 
-    /* aliases */
+    /* aliases
 
     array.histo = array.histogram;
     array.uniq = array.unique;
@@ -7514,7 +7384,7 @@ dtm.array = function () {
     // these are not really necessary, but prevents typeError when calling dtm.gen functions on pure dtm.array object
     array.type = function () { return array; };
     array.size = function () { return array; };
-
+/*
     array.call = function (fn) {
         if (isFunction(fn)) {
             if (arguments.length > 1) {
@@ -7540,10 +7410,10 @@ dtm.array = function () {
             dtm.util.print(array);
         }
         return array;
-    };
+    }; */
 
     // set the array content here
-    array.set.apply(this, arguments);
+  //  array.set.apply(this, arguments);
     return array;
 };
 
