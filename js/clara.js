@@ -14,36 +14,6 @@ var codeeditor = document.getElementById("codeeditor")
 
 
 
-/*
-//397
-function time2() {
-	timer = Date.now()
-	for (var i=0;i<1000;i++) {
-		dtm.data(0,1,2,3,4,5)
-	//	x = new Float32Array(1000)
-	//	x = dtm.gen("noise").rep(1000).get().length
-	}
-	timer = Date.now() - timer
-	console.log(timer)
-}
-	//400
-	//with (dtm) { data(0,1,2,3,4).r().rep(20)  }
-	//400
-	//dtm.data(0,1,2,3,4).r().rep(20)
-	//1
-	//x = [0,1,2,3,4]
-	// 350
-	// x = dtm.data(0)
-	// 200 when remove fn.foreach
-	// 20 when removing all array methods
-	// 200 when removeing 1/2 of array methods
-*/
-
-
-
-
-
-
 function Pattern(code) {
 	this.next = function() {
 		if (this.arr.length<=0) {
@@ -73,7 +43,20 @@ function Pattern(code) {
 	this.update(code)
 }
 
+Tone.setContext(piano.Tone.context)
 
+var Clara = {
+	ms: new Pattern(120),
+	vol: new Pattern(120),
+	fx: {
+		gain: new Tone.Volume(-12),
+		delay: new Tone.FeedbackDelay(.2, 0.5),
+		filter: new Tone.Filter(800, "bandpass"),
+		reverb: new Tone.JCReverb(0.4)
+	}
+}
+
+piano.chain( Clara.fx.gain,Clara.fx.delay,Clara.fx.filter,Clara.fx.reverb,Tone.Master )
 
 function Melody(patterns) {
 	this.next = function() {
@@ -133,6 +116,7 @@ for (var i=0;i<4;i++) {
 }
 function codeToData(code) {
 	if (code){
+		console.log(code)
 		data = {}
 	  code = code.split("\n")
 		for (var i=0;i<code.length;i++) {
@@ -146,8 +130,13 @@ function codeToData(code) {
 
 function evalCode() {
 	var parts = codeeditor.value.split('\n\n')
-	var metadata = parts.splice(0,1)
+	var metadata = parts.splice(0,1)[0]
 	var linenumber = codeeditor.value.substr(0, codeeditor.selectionStart).split("\n").length;
+
+	metadata = codeToData(metadata)
+	Clara.ms = new Pattern(metadata.ms || 120)
+	Clara.vol = new Pattern(metadata.vol || 0.5)
+
 
 	for (var i=0;i<parts.length;i++) {
 		melodies[i].code = codeToData(parts[i])
@@ -190,7 +179,6 @@ function colorItBlue() {
 
 
 function vizCode() {
-	console.log("vizzing...")
 	var parts = codeeditor.value.split('\n\n')
 	var metadata = parts.splice(0,1)
 	var linenumber = codeeditor.value.substr(0, codeeditor.selectionStart).split("\n").length;
@@ -215,7 +203,6 @@ function vizCode() {
 	}
 	for (var i=0;i<melodies.length;i++) {
 		if (melodies[i].viz.changed) {
-			console.log(i)
 			var mel = melodies[i].viz
 			if (mel.pitch) {
 				for (var j=0;j<mel.notes.length;j++) {
@@ -226,8 +213,6 @@ function vizCode() {
 				var pitches = mel.pitch.getRange(400)
 				var vels = mel.vel.getRange(400)
 				var durs = mel.dur.getRange(400)
-
-				console.log(pitches)
 
 				for (var k=0;k<pitches.length;k++) {
 					var pitch = pitches[k]
@@ -311,15 +296,17 @@ var Graph = {
 	}
 }
 
-
+/* essentially the *init* code */
 
 vizCode()
-
-
 Tone.Transport.start()
+piano.setVolume("release", -80)
+piano.setVolume("harmonics", -40)
+piano.setVolume("pedal", -40)
 
 
 var Loop = new Tone.Loop(function(time){
+	Loop.interval = Clara.ms.next() / 1000
 	for (var i=0;i<melodies.length;i++) {
 		melodies[i].engine.next()
 	}

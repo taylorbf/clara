@@ -193,4 +193,31 @@ pitch: data(12).rep(100).interleave(data(0),1,30)
 vel: 0.1
 dur: 10
 
+
+================
+
+pitch: gen("sine").fit(ri(1,5,9).get(0)).r(20,40).interleave(data(0),1,2)
+vel: rf(8,0,0.1)
+dur: rf(8,0,1)
+
+pitch: gen("sine").fit(ri(1,5,9).get(0)).r(20,40).interleave(data(0),1,2)
+vel: rf(8,0,0.1)
+dur: rf(8,0,1)
+
+pitch: gen("sine").fit(ri(1,5,9).get(0)).r(7,24).interleave(data(0),1,8)
+vel: rf(8,0,0.3)
+dur: rf(8,1,5)
+
+====
+
+vol: 0.01
+ms: gen("line").r(50,500).fit(50)
+
+pitch: data(5,50).fit(4).r(20,30)
+vel: 0.1
+dur: 6
+
+pitch: data(5,50).fit(6).r(24,32)
+vel: 0.1
+dur: 6
 */
